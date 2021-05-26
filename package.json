@@ -4,7 +4,9 @@
   "description": "actor based communication system",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "dev": "rollup -c -w",
+    "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
+    "test": "mocha ./test/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,11 @@
   },
   "homepage": "https://github.com/mjbaig/uragirimono#readme",
   "devDependencies": {
-    "rollup": "^2.50.0"
+    "chai": "^4.3.4",
+    "mocha": "^8.4.0",
+    "rollup": "^2.50.0",
+    "rollup-plugin-serve": "^1.1.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "sinon": "^11.1.0"
   }
 }

@@ -1,0 +1,28 @@
+{
+  "name": "uragirimono",
+  "version": "1.0.0",
+  "description": "actor based communication system",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mjbaig/uragirimono.git"
+  },
+  "keywords": [
+    "actor",
+    "elixir",
+    "genserver",
+    "communication"
+  ],
+  "author": "Maz Baig",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mjbaig/uragirimono/issues"
+  },
+  "homepage": "https://github.com/mjbaig/uragirimono#readme",
+  "devDependencies": {
+    "rollup": "^2.50.0"
+  }
+}

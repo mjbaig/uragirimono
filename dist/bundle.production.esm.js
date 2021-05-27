@@ -1,1 +1,1 @@
-console.log("hello world");const l={placeholder:"placeholder"};export{l as URAGIRIMONO};
+console.log("hello world");var l={placeholder:"placeholder"};export{l as URAGIRIMONO};

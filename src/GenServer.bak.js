@@ -2,8 +2,6 @@
 
 export default class GenServer {
 
-    workerMap = {};
-
     constructor(genServerName) {
         this.genServerName = genServerName;
     }
@@ -26,8 +24,6 @@ export default class GenServer {
         }
         
         const worker = new Worker(window.URL.createObjectURL(blob));
-
-        this.workerMap[processName] = worker;
 
         return worker;
 

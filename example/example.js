@@ -1,7 +1,5 @@
 console.log("hello world");
-
-
-const URAGIRIMONO = {
+var URAGIRIMONO = {
     placeholder: "placeholder"
 };
 

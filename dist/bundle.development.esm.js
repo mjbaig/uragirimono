@@ -1,26 +1,35 @@
-var Uragirimono = /** @class */ (function () {
-    function Uragirimono() {
+class Uragirimono {
+    constructor() {
         this.channels = new Map();
     }
-    Uragirimono.prototype.createWorker = function () {
-        this.process = "\n            self.onmessage = function (message) {\n                self.postMessage(message.data);\n            }\n        ";
-        var func = "( () => {\n                " + this.process.toString() + "\n        })();";
-        var blob = new Blob([func], { type: 'application/javascript' });
-        var worker = new Worker(window.URL.createObjectURL(blob));
-        worker.onmessage = function (event) {
+    createWorker() {
+        const process = `
+            self.onmessage = function (message) {
+                self.postMessage(message.data);
+            }
+        `;
+        const func = `( () => {
+                ${process.toString()}
+        })();`;
+        const blob = new Blob([func], { type: 'application/javascript' });
+        const worker = new Worker(window.URL.createObjectURL(blob));
+        worker.onmessage = (event) => {
             if (!!event) {
-                var message_1 = event.data;
-                var subscribers = this.channels.get(message_1.channelName).subscribers;
-                if (subscribers) {
-                    subscribers.map(function (subscriber) {
-                        subscriber.update(message_1);
-                    });
+                const message = event.data;
+                const channel = this.channels.get(message.channelName);
+                if (channel !== undefined) {
+                    const subscribers = channel.subscribers;
+                    if (subscribers) {
+                        subscribers.map(function (subscriber) {
+                            subscriber.update(message);
+                        });
+                    }
                 }
             }
-        }.bind(this);
+        };
         return worker;
-    };
-    Uragirimono.prototype.registerChannel = function (channelName) {
+    }
+    registerChannel(channelName) {
         if (!this.channels.get(channelName)) {
             this.channels.set(channelName, {
                 name: channelName,
@@ -28,27 +37,30 @@ var Uragirimono = /** @class */ (function () {
                 worker: this.createWorker()
             });
         }
-    };
-    Uragirimono.prototype.destroyChannel = function (channelName) {
-        var channel = this.channels.get(channelName);
-        if (!channel) {
+    }
+    destroyChannel(channelName) {
+        const channel = this.channels.get(channelName);
+        if (channel !== undefined) {
             channel.worker.terminate();
-            this.channels["delete"](channelName);
+            this.channels.delete(channelName);
         }
-    };
-    Uragirimono.prototype.send = function (message) {
-        var channelName = message.channelName;
+    }
+    send(message) {
+        const channelName = message.channelName;
         if (!!channelName) {
-            var worker = this.channels.get(channelName).worker;
-            worker.postMessage(message);
+            const channel = this.channels.get(channelName);
+            if (channel !== undefined) {
+                const worker = channel.worker;
+                worker.postMessage(message);
+            }
         }
-    };
-    Uragirimono.prototype.registerSubscriber = function (channelName, subscriber) {
-        if (!!this.channels.get(channelName)) {
-            this.channels.get(channelName).subscribers.push(subscriber);
+    }
+    registerSubscriber(channelName, subscriber) {
+        const channel = this.channels.get(channelName);
+        if (channel !== undefined) {
+            channel.subscribers.push(subscriber);
         }
-    };
-    return Uragirimono;
-}());
+    }
+}
 
 export default Uragirimono;

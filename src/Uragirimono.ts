@@ -1,7 +1,7 @@
 'use strict'
 
 interface Subscriber {
-    update(message: Message);
+    update(message: Message): void;
 }
 
 interface Message {
@@ -17,8 +17,6 @@ interface Channel {
 
 export default class Uragirimono {
 
-    process: string;
-
     channels: Map<string, Channel> =  new Map();
 
     constructor() {
@@ -26,14 +24,14 @@ export default class Uragirimono {
 
     createWorker() {
 
-        this.process = `
+        const process = `
             self.onmessage = function (message) {
                 self.postMessage(message.data);
             }
         `
 
         const func = `( () => {
-                ${this.process.toString()}
+                ${process.toString()}
         })();`
 
 
@@ -41,17 +39,21 @@ export default class Uragirimono {
 
         const worker = new Worker(window.URL.createObjectURL(blob));
 
-        worker.onmessage = function(event) {
+        worker.onmessage = (event: MessageEvent) => {
             if(!!event) {
                 const message: Message = event.data
-                const subscribers = this.channels.get(message.channelName).subscribers as Array<Subscriber>
-                if(subscribers) {
-                    subscribers.map(function(subscriber: Subscriber) {
-                        subscriber.update(message);
-                    });
+                const channel: Channel | undefined = this.channels.get(message.channelName);
+                if(channel !== undefined) {
+                    const subscribers = channel.subscribers as Array<Subscriber>
+                    if(subscribers) {
+                        subscribers.map(function(subscriber: Subscriber) {
+                            subscriber.update(message);
+                        });
+                    }
                 }
+                
             }
-        }.bind(this);
+        }
 
         return worker;
     }
@@ -67,8 +69,8 @@ export default class Uragirimono {
     }
 
     destroyChannel(channelName: string) {
-        const channel: Channel = this.channels.get(channelName);
-        if(!channel) {
+        const channel: Channel | undefined = this.channels.get(channelName);
+        if(channel !== undefined) {
             channel.worker.terminate();
             this.channels.delete(channelName);
         }
@@ -77,14 +79,18 @@ export default class Uragirimono {
     send(message: Message) {
         const channelName = message.channelName;
         if(!!channelName) {
-            const worker = this.channels.get(channelName).worker as Worker;
-            worker.postMessage(message);
+            const channel: Channel | undefined = this.channels.get(channelName);
+            if(channel !== undefined) {
+                const worker = channel.worker as Worker;
+                worker.postMessage(message);
+            }
         }
     }
 
     registerSubscriber(channelName: string, subscriber: Subscriber) {
-        if(!!this.channels.get(channelName)) {
-            this.channels.get(channelName).subscribers.push(subscriber);
+        const channel: Channel | undefined = this.channels.get(channelName)
+        if(channel !== undefined) {
+            channel.subscribers.push(subscriber);
         }
     }
 

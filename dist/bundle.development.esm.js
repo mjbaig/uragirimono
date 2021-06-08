@@ -1,22 +1,16 @@
 var Uragirimono = /** @class */ (function () {
     function Uragirimono() {
         this.channels = new Map();
-        this.worker = null;
-        this.process = "\n            self.onmessage = function (message) {\n                console.log(message.data);\n\n                self.postMessage(message.data);\n            }\n        ";
-        this.init();
     }
-    Uragirimono.prototype.init = function () {
-        if (this.worker != null) {
-            return;
-        }
+    Uragirimono.prototype.createWorker = function () {
+        this.process = "\n            self.onmessage = function (message) {\n                self.postMessage(message.data);\n            }\n        ";
         var func = "( () => {\n                " + this.process.toString() + "\n        })();";
-        console.log(func);
         var blob = new Blob([func], { type: 'application/javascript' });
-        this.worker = new Worker(window.URL.createObjectURL(blob));
-        this.worker.onmessage = function (event) {
+        var worker = new Worker(window.URL.createObjectURL(blob));
+        worker.onmessage = function (event) {
             if (!!event) {
                 var message_1 = event.data;
-                var subscribers = this.channels.get(message_1.channel);
+                var subscribers = this.channels.get(message_1.channelName).subscribers;
                 if (subscribers) {
                     subscribers.map(function (subscriber) {
                         subscriber.update(message_1);
@@ -24,18 +18,34 @@ var Uragirimono = /** @class */ (function () {
                 }
             }
         }.bind(this);
+        return worker;
     };
-    Uragirimono.prototype.registerChannel = function (channel) {
-        if (!this.channels.get(channel)) {
-            this.channels.set(channel, []);
+    Uragirimono.prototype.registerChannel = function (channelName) {
+        if (!this.channels.get(channelName)) {
+            this.channels.set(channelName, {
+                name: channelName,
+                subscribers: [],
+                worker: this.createWorker()
+            });
+        }
+    };
+    Uragirimono.prototype.destroyChannel = function (channelName) {
+        var channel = this.channels.get(channelName);
+        if (!channel) {
+            channel.worker.terminate();
+            this.channels["delete"](channelName);
         }
     };
     Uragirimono.prototype.send = function (message) {
-        this.worker.postMessage(message);
+        var channelName = message.channelName;
+        if (!!channelName) {
+            var worker = this.channels.get(channelName).worker;
+            worker.postMessage(message);
+        }
     };
-    Uragirimono.prototype.registerSubscriber = function (channel, subscriber) {
-        if (!!this.channels.get(channel)) {
-            this.channels.get(channel).push(subscriber);
+    Uragirimono.prototype.registerSubscriber = function (channelName, subscriber) {
+        if (!!this.channels.get(channelName)) {
+            this.channels.get(channelName).subscribers.push(subscriber);
         }
     };
     return Uragirimono;

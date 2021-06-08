@@ -5,52 +5,46 @@ interface Subscriber {
 }
 
 interface Message {
-    channel: string,
+    channelName: string,
     payload: Object,
+}
+
+interface Channel {
+    name: string,
+    subscribers: Array<Subscriber>,
+    worker: Worker
 }
 
 export default class Uragirimono {
 
-    worker: Worker;
-
     process: string;
 
-    channels: Map<string, Array<Subscriber>> =  new Map();
+    channels: Map<string, Channel> =  new Map();
 
     constructor() {
-        this.worker = null;
+    }
+
+    createWorker() {
 
         this.process = `
             self.onmessage = function (message) {
-                console.log(message.data);
-
                 self.postMessage(message.data);
             }
         `
-
-        this.init();
-    }
-
-    init() {
-
-        if(this.worker != null) {
-            return;
-        }
 
         const func = `( () => {
                 ${this.process.toString()}
         })();`
 
-        console.log(func);
 
         const blob = new Blob([func], { type: 'application/javascript' });
 
-        this.worker = new Worker(window.URL.createObjectURL(blob));
+        const worker = new Worker(window.URL.createObjectURL(blob));
 
-        this.worker.onmessage = function(event) {
+        worker.onmessage = function(event) {
             if(!!event) {
                 const message: Message = event.data
-                const subscribers = this.channels.get(message.channel) as Array<Subscriber>
+                const subscribers = this.channels.get(message.channelName).subscribers as Array<Subscriber>
                 if(subscribers) {
                     subscribers.map(function(subscriber: Subscriber) {
                         subscriber.update(message);
@@ -58,21 +52,39 @@ export default class Uragirimono {
                 }
             }
         }.bind(this);
+
+        return worker;
     }
 
-    registerChannel(channel: string) {
-        if(!this.channels.get(channel)) {
-            this.channels.set(channel, []);
+    registerChannel(channelName: string) {
+        if(!this.channels.get(channelName)) {
+            this.channels.set(channelName, {
+                name: channelName,
+                subscribers: [],
+                worker: this.createWorker()
+            } as Channel);
+        }
+    }
+
+    destroyChannel(channelName: string) {
+        const channel: Channel = this.channels.get(channelName);
+        if(!channel) {
+            channel.worker.terminate();
+            this.channels.delete(channelName);
         }
     }
 
     send(message: Message) {
-        this.worker.postMessage(message);
+        const channelName = message.channelName;
+        if(!!channelName) {
+            const worker = this.channels.get(channelName).worker as Worker;
+            worker.postMessage(message);
+        }
     }
 
-    registerSubscriber(channel: string, subscriber: Subscriber) {
-        if(!!this.channels.get(channel)) {
-            this.channels.get(channel).push(subscriber);
+    registerSubscriber(channelName: string, subscriber: Subscriber) {
+        if(!!this.channels.get(channelName)) {
+            this.channels.get(channelName).subscribers.push(subscriber);
         }
     }
 

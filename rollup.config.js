@@ -1,15 +1,12 @@
 import {terser} from 'rollup-plugin-terser';
 import serve from 'rollup-plugin-serve'
 import typescript from '@rollup/plugin-typescript';
+import copy from 'rollup-plugin-copy';
 
 export default {
-    input: 'src/index.ts',
+    input: 'src/Uragirimono.ts',
     output: [{
         file: 'dist/bundle.development.esm.js',
-        format: 'es'
-    },
-    {
-        file: 'example/example.js',
         format: 'es'
     },
     {
@@ -19,6 +16,13 @@ export default {
     }],
     plugins: [
         typescript(),
-        serve('example')
+        copy({
+            targets: [
+              { src: 'dist/bundle.development.esm.js', dest: 'example' }
+            ],
+            hook: "writeBundle",
+        }),
+        serve('example'),
+        
     ]
 }

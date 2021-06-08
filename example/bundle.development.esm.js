@@ -1,6 +1,8 @@
 class Uragirimono {
     constructor() {
         this.channels = new Map();
+        console.log("t");
+        console.log("instance");
     }
     createWorker() {
         const process = `
@@ -62,5 +64,6 @@ class Uragirimono {
         }
     }
 }
+const uragirimono = new Uragirimono();
 
-export default Uragirimono;
+export { uragirimono };

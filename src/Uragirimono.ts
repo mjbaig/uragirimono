@@ -15,11 +15,13 @@ interface Channel {
     worker: Worker
 }
 
-export default class Uragirimono {
+class Uragirimono {
 
     channels: Map<string, Channel> =  new Map();
 
     constructor() {
+        console.log("t");
+        console.log("instance");
     }
 
     createWorker() {
@@ -95,3 +97,5 @@ export default class Uragirimono {
     }
 
 }
+
+export const uragirimono = new Uragirimono();

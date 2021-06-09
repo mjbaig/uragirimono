@@ -1,49 +1,18 @@
 class Uragirimono {
     constructor() {
         this.channels = new Map();
-        console.log("t");
-        console.log("instance");
-    }
-    createWorker() {
-        const process = `
-            self.onmessage = function (message) {
-                self.postMessage(message.data);
-            }
-        `;
-        const func = `( () => {
-                ${process.toString()}
-        })();`;
-        const blob = new Blob([func], { type: 'application/javascript' });
-        const worker = new Worker(window.URL.createObjectURL(blob));
-        worker.onmessage = (event) => {
-            if (!!event) {
-                const message = event.data;
-                const channel = this.channels.get(message.channelName);
-                if (channel !== undefined) {
-                    const subscribers = channel.subscribers;
-                    if (subscribers) {
-                        subscribers.map(function (subscriber) {
-                            subscriber.update(message);
-                        });
-                    }
-                }
-            }
-        };
-        return worker;
     }
     registerChannel(channelName) {
         if (!this.channels.get(channelName)) {
             this.channels.set(channelName, {
                 name: channelName,
-                subscribers: [],
-                worker: this.createWorker()
+                subscribers: []
             });
         }
     }
     destroyChannel(channelName) {
         const channel = this.channels.get(channelName);
         if (channel !== undefined) {
-            channel.worker.terminate();
             this.channels.delete(channelName);
         }
     }
@@ -52,10 +21,14 @@ class Uragirimono {
         if (!!channelName) {
             const channel = this.channels.get(channelName);
             if (channel !== undefined) {
-                const worker = channel.worker;
-                worker.postMessage(message);
+                const subscribers = channel.subscribers;
+                subscribers.map((subscriber) => {
+                    subscriber.update(message);
+                });
             }
         }
+    }
+    updateSubscribers(message) {
     }
     registerSubscriber(channelName, subscriber) {
         const channel = this.channels.get(channelName);

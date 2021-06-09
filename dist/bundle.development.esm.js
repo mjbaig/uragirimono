@@ -6,7 +6,7 @@ class Uragirimono {
         if (!this.channels.get(channelName)) {
             this.channels.set(channelName, {
                 name: channelName,
-                subscribers: []
+                subscriberCallbacks: []
             });
         }
     }
@@ -21,19 +21,17 @@ class Uragirimono {
         if (!!channelName) {
             const channel = this.channels.get(channelName);
             if (channel !== undefined) {
-                const subscribers = channel.subscribers;
-                subscribers.map((subscriber) => {
-                    subscriber.update(message);
+                const subscriberCallbacks = channel.subscriberCallbacks;
+                subscriberCallbacks.map((subscriberCallback) => {
+                    subscriberCallback(message);
                 });
             }
         }
     }
-    updateSubscribers(message) {
-    }
-    registerSubscriber(channelName, subscriber) {
+    registerSubscriber(channelName, subscriberCallback) {
         const channel = this.channels.get(channelName);
         if (channel !== undefined) {
-            channel.subscribers.push(subscriber);
+            channel.subscriberCallbacks.push(subscriberCallback);
         }
     }
 }

@@ -14,12 +14,11 @@ describe('Uragirimono tests', () => { // the tests container
 
     it('add subscriber', () => {
 
-        uragirimono.registerSubscriber("testChannel", {
-            update() {
+        uragirimono.registerSubscriber("testChannel",
+            () => {
                 console.log("klasjdf");
                 value = 1;
-            }
-        })
+            });
     });
 
     it('send message', () => { // the single test

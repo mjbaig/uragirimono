@@ -1,9 +1,5 @@
 'use strict'
 
-interface Subscriber {
-    update(message: Message): void;
-}
-
 interface Message {
     channelName: string,
     payload: Object,
@@ -11,7 +7,7 @@ interface Message {
 
 interface Channel {
     name: string,
-    subscribers: Array<Subscriber>
+    subscriberCallbacks: Array<(message: Message) => void>
 }
 
 class Uragirimono {
@@ -25,7 +21,7 @@ class Uragirimono {
         if(!this.channels.get(channelName)) {
             this.channels.set(channelName, {
                 name: channelName,
-                subscribers: []
+                subscriberCallbacks: []
             } as Channel);
         }
     }
@@ -42,24 +38,18 @@ class Uragirimono {
         if(!!channelName) {
             const channel: Channel | undefined = this.channels.get(channelName);
             if(channel !== undefined) {
-                const subscribers = channel.subscribers as Array<Subscriber>;
-                subscribers.map((subscriber: Subscriber) => {
-                    subscriber.update(message);
+                const subscriberCallbacks = channel.subscriberCallbacks as Array<(message: Message) => void>;
+                subscriberCallbacks.map((subscriberCallback: (message: Message) => void) => {
+                    subscriberCallback(message);
                 });
             }
         }
     }
 
-    updateSubscribers(message: Message) {
-
-
-
-    }
-
-    registerSubscriber(channelName: string, subscriber: Subscriber) {
+    registerSubscriber(channelName: string, subscriberCallback: (message: Message) => void) {
         const channel: Channel | undefined = this.channels.get(channelName)
         if(channel !== undefined) {
-            channel.subscribers.push(subscriber);
+            channel.subscriberCallbacks.push(subscriberCallback);
         }
     }
 

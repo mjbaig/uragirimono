@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import {uragirimono} from '../src/Uragirimono';
+import Uragirimono from '../src/Uragirimono';
+
+const uragirimono = new Uragirimono();
 
 var value = 0;
 

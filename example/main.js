@@ -1,6 +1,8 @@
 'use strict'
 
-import {uragirimono} from './bundle.development.esm.js';
+import Uragirimono from './bundle.development.esm.js';
+
+const uragirimono = new Uragirimono();
 
 var value1 = 1;
 

@@ -35,6 +35,5 @@ class Uragirimono {
         }
     }
 }
-const uragirimono = new Uragirimono();
 
-export { uragirimono };
+export default Uragirimono;

@@ -10,7 +10,7 @@ interface Channel {
     subscriberCallbacks: Array<(message: Message) => void>
 }
 
-class Uragirimono {
+export default class Uragirimono {
 
     channels: Map<string, Channel> =  new Map();
 
@@ -55,4 +55,4 @@ class Uragirimono {
 
 }
 
-export const uragirimono = new Uragirimono();
+

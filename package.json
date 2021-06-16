@@ -2,7 +2,11 @@
   "name": "uragirimono",
   "version": "1.0.0",
   "description": "actor based communication system",
-  "main": "index.js",
+  "main": "dist/uragirimono.esm.js",
+  "module": "dist/uragirimono.esm.js",
+  "exports" : {
+    ".": "./dist/uragirimono.esm.js"
+  },
   "scripts": {
     "dev": "rollup -c -w",
     "build": "rimraf dist/* && rollup -c --environment INCLUDE_DEPS,BUILD:production",

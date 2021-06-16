@@ -10,6 +10,10 @@ export default {
         format: 'es'
     },
     {
+        file: 'dist/uragirimono.esm.js',
+        format: 'es'
+    },
+    {
         file: 'dist/bundle.production.esm.js',
         format: 'es',
         plugins: [terser()]

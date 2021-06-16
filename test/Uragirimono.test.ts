@@ -16,7 +16,7 @@ describe('Uragirimono tests', () => { // the tests container
 
     it('add subscriber', () => {
 
-        uragirimono.registerSubscriber("testChannel",
+        uragirimono.registerSubscriber("testChannel", {min: 0, max: 100},
             () => {
                 console.log("klasjdf");
                 value = 1;
@@ -27,7 +27,8 @@ describe('Uragirimono tests', () => { // the tests container
         /* fps limit */
         uragirimono.send({
             channelName: "testChannel",
-            payload: {test: 0}
+            payload: {test: 0},
+            address: 50
         });
 
         expect(value).to.equal(1);

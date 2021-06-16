@@ -3,11 +3,22 @@
 interface Message {
     channelName: string,
     payload: Object,
+    address: Number
 }
 
 interface Channel {
     name: string,
-    subscriberCallbacks: Array<(message: Message) => void>
+    subscibers: Array<Subscriber>
+}
+
+interface Range {
+    min: Number,
+    max: Number
+}
+
+interface Subscriber {
+    addressableRange: Range,
+    callback: (message: Message) => void
 }
 
 export default class Uragirimono {
@@ -21,7 +32,7 @@ export default class Uragirimono {
         if(!this.channels.get(channelName)) {
             this.channels.set(channelName, {
                 name: channelName,
-                subscriberCallbacks: []
+                subscibers: []
             } as Channel);
         }
     }
@@ -37,19 +48,28 @@ export default class Uragirimono {
         const channelName = message.channelName;
         if(!!channelName) {
             const channel: Channel | undefined = this.channels.get(channelName);
-            if(channel !== undefined) {
-                const subscriberCallbacks = channel.subscriberCallbacks as Array<(message: Message) => void>;
-                subscriberCallbacks.map((subscriberCallback: (message: Message) => void) => {
-                    subscriberCallback(message);
+            const subscibers: Subscriber[] | undefined = channel?.subscibers;
+            if(subscibers !== undefined) {
+
+                subscibers.map((subscriber: Subscriber) => {
+                    const range: Range = subscriber.addressableRange;
+                    const callback: (message: Message) => void = subscriber.callback;
+                    if(message.address >= range.min && message.address <= range.max) {
+                        callback(message)
+                    }
                 });
+
             }
         }
     }
 
-    registerSubscriber(channelName: string, subscriberCallback: (message: Message) => void) {
+    registerSubscriber(channelName: string, addressableRange: Range, subscriberCallback: (message: Message) => void) {
         const channel: Channel | undefined = this.channels.get(channelName)
         if(channel !== undefined) {
-            channel.subscriberCallbacks.push(subscriberCallback);
+            channel.subscibers.push({
+                addressableRange: addressableRange,
+                callback: subscriberCallback
+            } as Subscriber)
         }
     }
 

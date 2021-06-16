@@ -28,42 +28,24 @@ const testSubscriber2 = new TestSubscriber2();
 
 uragirimono.registerChannel("test");
 
-uragirimono.registerSubscriber("test", testSubscriber.update);
-uragirimono.registerSubscriber("test", testSubscriber2.update);
+uragirimono.registerSubscriber("test", {min: 0, max: 100}, testSubscriber.update);
 
-uragirimono.registerChannel("taco");
-
-uragirimono.registerSubscriber("taco", testSubscriber.update);
-uragirimono.registerSubscriber("taco", testSubscriber2.update);
+uragirimono.registerSubscriber("test", {min: 0, max: 100}, testSubscriber2.update);
 
 uragirimono.send({
     channelName: "test",
-    payload: {"test1": 0}
+    payload: {test: 0},
+    address: 50
 });
 
 uragirimono.send({
     channelName: "test",
-    payload: {"test2": 0}
+    payload: {test: 1},
+    address: 50
 });
 
 uragirimono.send({
     channelName: "test",
-    payload: {"test3": 0}
+    payload: {test: 5},
+    address: 150
 });
-
-uragirimono.send({
-    channelName: "taco",
-    payload: {"test4": 0}
-});
-
-uragirimono.send({
-    channelName: "taco",
-    payload: {"test5": 0}
-});
-
-uragirimono.send({
-    channelName: "taco",
-    payload: {"test6": 0}
-});
-
-console.log(`value1: ${value1} value2: ${value2}`);

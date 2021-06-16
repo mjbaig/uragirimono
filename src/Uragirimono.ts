@@ -44,7 +44,7 @@ export default class Uragirimono {
         }
     }
 
-    send(message: Message) {
+    write(message: Message) {
         const channelName = message.channelName;
         if(!!channelName) {
             const channel: Channel | undefined = this.channels.get(channelName);

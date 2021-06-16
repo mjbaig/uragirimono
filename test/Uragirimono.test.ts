@@ -25,7 +25,7 @@ describe('Uragirimono tests', () => { // the tests container
 
     it('send message', () => { // the single test
         /* fps limit */
-        uragirimono.send({
+        uragirimono.write({
             channelName: "testChannel",
             payload: {test: 0},
             address: 50

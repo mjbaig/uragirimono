@@ -32,19 +32,19 @@ uragirimono.registerSubscriber("test", {min: 0, max: 100}, testSubscriber.update
 
 uragirimono.registerSubscriber("test", {min: 0, max: 100}, testSubscriber2.update);
 
-uragirimono.send({
+uragirimono.write({
     channelName: "test",
     payload: {test: 0},
     address: 50
 });
 
-uragirimono.send({
+uragirimono.write({
     channelName: "test",
     payload: {test: 1},
     address: 50
 });
 
-uragirimono.send({
+uragirimono.write({
     channelName: "test",
     payload: {test: 5},
     address: 150

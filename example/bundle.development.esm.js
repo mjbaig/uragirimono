@@ -16,7 +16,7 @@ class Uragirimono {
             this.channels.delete(channelName);
         }
     }
-    send(message) {
+    write(message) {
         const channelName = message.channelName;
         if (!!channelName) {
             const channel = this.channels.get(channelName);

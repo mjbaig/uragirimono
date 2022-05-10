@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "rollup -c -w",
-    "build": "rimraf dist/* && rollup -c --environment INCLUDE_DEPS,BUILD:production",
+    "build": "rimraf dist/* && NODE_ENV=build rollup -c --environment INCLUDE_DEPS,BUILD:production",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/**/*test.ts'"
   },
   "repository": {

@@ -44,3 +44,4 @@ class Uragirimono {
 }
 
 export default Uragirimono;
+//# sourceMappingURL=uragirimono.esm.js.map
